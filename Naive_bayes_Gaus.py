@@ -191,7 +191,7 @@ def recall_per_class(preds, test_set, class_):
 recall_per_class(predictions, test, 0)
 recall_per_class(predictions, test, 1)             
 
-class Mult_Nom_Gaus:
+class Gaus_NB:
     
     def __init__(self, filename, split_ratio):
         self.filename = filename
@@ -330,7 +330,7 @@ class Mult_Nom_Gaus:
         print('The recall of the class ', class_, ' is: ', self.recall)
         return self.recall
 
-our_lines = Mult_Nom_Gaus('data/pima-indians-diabetes.csv', 0.2)
+our_lines = Gaus_NB('data/pima-indians-diabetes.csv', 0.2)
 our_lines.data_transformer()
 train, test = our_lines.train_test_split()
 our_lines.separateByClass()

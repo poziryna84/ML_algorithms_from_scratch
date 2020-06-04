@@ -55,7 +55,7 @@ def separateByClass(dataset):
         separated[vector[-1]].append(vector)
     return separated
 
-# The functions that calculates mean and standard deviation of a list of 
+# The functions that calculate mean and standard deviation of a list of 
 # numbers:
 
 def mean(numbers):

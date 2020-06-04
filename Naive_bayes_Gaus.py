@@ -117,11 +117,10 @@ def calculateClassProbabilities(summaries, inputVector):
 # Extract the key with the highest value from the dictionary of the probabili-
 # ties created by the calculateClassProbabilities for each instance:
 
-def predict(summaries, inputVector):
-    
+    def predict(summaries, inputVector):
     probabilities = calculateClassProbabilities(summaries, inputVector) 
     label = max(probabilities.items(), key=operator.itemgetter(1))[0]
-
+                                                                                                                                                                  
     return label
     
 # Iterate over test set and get the probabilities of each instance applying
@@ -199,6 +198,7 @@ class Mult_Nom_Gaus:
         self.split_ratio = split_ratio
         self.operator = operator
         
+        
     def data_transformer(self):
         self.lines = csv.reader(open(self.filename))
         self.dataset = list(self.lines)
@@ -228,25 +228,28 @@ class Mult_Nom_Gaus:
         return self.separated
     
     def mean(self, numbers):
+
         return sum(numbers)/float(len(numbers))
 
+
     def stdev(self, numbers):
-        avg = mean(numbers)
-        st_dev = math.sqrt(sum([(i - avg)**2 for i in numbers])/float(len(numbers)-1))
-        return st_dev
+        avg = self.mean(numbers)
+        
+        return math.sqrt(sum([(i - avg)**2 for i in numbers])/float(len(numbers)-1))
     
-    def summarize(self):
-        self.summaries = [(mean(attribute), stdev(attribute)) for attribute in zip(*self.train_set)]
-        del self.summaries[-1]
-        return self.summaries
+    def summarize(self, data):
+        summaries = [(self.mean(attribute), self.stdev(attribute)) for attribute in zip(*data)]
+        del summaries[-1]
+        return summaries
     
     def summarizeByClass(self):
         
-        separated = separateByClass(self.train_set)
+        separated = self.separated
         self.summaries = {}
         for classValue, instances in separated.items():
+            print('its here')
             print(classValue, instances)
-            self.summaries[classValue] = summarize(instances)
+            self.summaries[classValue] = self.summarize(instances)
         return self.summaries
     
     def calculateProbability(self, x, mean, stdev):
@@ -254,29 +257,29 @@ class Mult_Nom_Gaus:
         prob = (1/(math.sqrt(2*math.pi)*stdev))*exponent
         return prob
        
-    def calculateClassProbabilities(self):
+    def calculateClassProbabilities(self, inputVector):
         
-        self.summaries = summarizeByClass(self.train_set)
         self.probabilities = {}
         for classValue, classSummaries in self.summaries.items():
             self.probabilities[classValue] = 1
             for i in range(len(classSummaries)):
                 mean, stdev = classSummaries[i]
-                x = self.test_set[i]
-                self.probabilities[classValue] *= calculateProbability(x, mean, stdev)
+                x = inputVector[i]
+                self.probabilities[classValue] *= self.calculateProbability(x, mean, stdev)
           
         return self.probabilities
-    
-    def predict(self, inputVector):
-        self.probabilities = calculateClassProbabilities(self.summaries, inputVector) 
+
+    def predict(self, summaries, inputVector):
         
-        return max(self.items(), key=self.operator.itemgetter(1))[0]
+        self.probabilities = self.calculateClassProbabilities(inputVector) 
+        
+        return max(self.probabilities.items(), key=self.operator.itemgetter(1))[0]
 
     def getPredictions(self):
-        self.summaries = summarizeByClass(self.train_set)
+
         self.predictions = []
         for i in range(len(self.test_set)):
-            result = predict(self.summaries, self.test_set[i])
+            result = self.predict(self.summaries, self.test_set[i])
             self.predictions.append(result)
         return self.predictions
     
@@ -331,22 +334,21 @@ our_lines = Mult_Nom_Gaus('data/pima-indians-diabetes.csv', 0.2)
 our_lines.data_transformer()
 train, test = our_lines.train_test_split()
 our_lines.separateByClass()
-our_lines.summarize()
 our_lines.summarizeByClass()
-#our_lines.calculateClassProbabilities()
-pr = our_lines.getPredictions()
+our_lines.getPredictions()
+
 our_lines.get_accuracy()
+
 our_lines.precision_per_class(1)
 our_lines.precision_per_class(0)
 our_lines.recall_per_class(1)
 our_lines.recall_per_class(0)
 
-train_ = pd.DataFrame(train)
-test_ = pd.DataFrame(test)
-
 from sklearn import metrics
 from sklearn.naive_bayes import GaussianNB
 
+train_ = pd.DataFrame(train)
+test_ = pd.DataFrame(test)
 
 model = GaussianNB()
 model.fit(train_[train_.columns[0:8]], train_[train_.columns[-1]])
@@ -354,5 +356,9 @@ predicted = model.predict(test_[test_.columns[0:8]])
 expected = test_[test_.columns[-1]]
 probass = model.predict_proba(test_[test_.columns[0:8]])
 print(metrics.classification_report(expected, predicted))
-print(metrics.confusion_matrix(expected, predicted))
 print(metrics.accuracy_score(expected, predicted))
+
+# Our implimentation: 71.42857142857143 accuracy 
+# Sklearn implimentation: 0.7142857142857143 accuaracy.
+# That happened because the sklearn model uses a little other implementation 
+# of this model than we used, you can read more on the sklearn website.

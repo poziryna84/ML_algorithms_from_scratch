@@ -193,20 +193,21 @@ recall_per_class(predictions, test, 1)
 
 class Gaus_NB:
     
-    def __init__(self, filename, split_ratio):
+    def __init__(self):
+        super().__init__
+              
+    def data_transformer(self, filename):
+        
         self.filename = filename
-        self.split_ratio = split_ratio
-        self.operator = operator
-        
-        
-    def data_transformer(self):
         self.lines = csv.reader(open(self.filename))
+        self.filename = filename
         self.dataset = list(self.lines)
         for i in range(len(self.dataset)):
             self.dataset[i] = [float(x) for x in self.dataset[i]]
         return self.dataset
     
-    def train_test_split(self):
+    def train_test_split(self, split_ratio):
+        self.split_ratio = split_ratio
         self.test_number = round(len(self.dataset)*self.split_ratio)
         self.indexes = [i for i in range(0, len(self.dataset))]
         
@@ -271,6 +272,7 @@ class Gaus_NB:
 
     def predict(self, summaries, inputVector):
         
+        self.operator = operator
         self.probabilities = self.calculateClassProbabilities(inputVector) 
         
         return max(self.probabilities.items(), key=self.operator.itemgetter(1))[0]
@@ -330,13 +332,12 @@ class Gaus_NB:
         print('The recall of the class ', class_, ' is: ', self.recall)
         return self.recall
 
-our_lines = Gaus_NB('data/pima-indians-diabetes.csv', 0.2)
-our_lines.data_transformer()
-train, test = our_lines.train_test_split()
+our_lines = Gaus_NB()
+our_lines.data_transformer('data/pima-indians-diabetes.csv')
+train, test = our_lines.train_test_split(0.2)
 our_lines.separateByClass()
 our_lines.summarizeByClass()
 our_lines.getPredictions()
-
 our_lines.get_accuracy()
 
 our_lines.precision_per_class(1)

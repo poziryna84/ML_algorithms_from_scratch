@@ -5,10 +5,6 @@ Created on Fri Jun 12 19:39:14 2020
 @author: pozir
 """
 import pandas as pd
-import numpy as np
-#import requests
-#import lxml.html as lh
-#import scipy
 from scipy.stats import chi2
 
 class GodnessOfFit:
@@ -57,10 +53,10 @@ class GodnessOfFit:
         return self.pval
                 
 gf = GodnessOfFit()
-gf.chi_square_two_tables([[6, 78], [9, 55], [15, 133], [6, 58]])
+gf.chi_square_two_tables([[38, 7, 3], [162, 53, 37]])
 gf.p_value()
 
-gf.chi_square_one_table([1968, 14, 8, 10], [0.986, 0.005, 0.004, 0.005])
+gf.chi_square_one_table([75, 55, 15, 5], [0.5, 0.3, 0.1, 0.1])
 gf.p_value()
 
 data = pd.DataFrame([[16,30, 14], [27,23,10], [29,16,15]])

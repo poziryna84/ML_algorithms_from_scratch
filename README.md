@@ -23,4 +23,6 @@ Godness_Of_Fit.py: Chi-square tests implementation to test hypotheses about dist
 
 Step by step implementation of goodness-of-fit tests to see if sample data fits a hypothesized distribution, and tests for independence between two categorical variables.
 
+Decision_tree_classification.py: the implementation of Decision tree for classification problem with the main focus on the feature selection step with the main purpose of understanding of the consept of Gini Information Gain. The data used is created at the beginning of the script.
+
 

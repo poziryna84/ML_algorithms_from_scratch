@@ -239,9 +239,11 @@ def build_tree(rows):
 
     # Recursively build the true branch.
     true_branch = build_tree(true_rows)
+    print(true_branch)
 
     # Recursively build the false branch.
     false_branch = build_tree(false_rows)
+    print(false_branch)
 
     # Return a Question node.
     # This records the best feature / value to ask at this point,
@@ -270,7 +272,7 @@ def print_tree(node, spacing=""):
 
 
 my_tree = build_tree(training_data)      
-print(my_tree)
+print_tree(my_tree)
 
 
 def classify(row, node):
